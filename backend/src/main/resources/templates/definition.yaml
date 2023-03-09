@@ -1,0 +1,250 @@
+openapi: 3.0.3
+info:
+  title: CaschRägister Service
+  description: Dokumentation der Schnittstelle des Cash Registers
+  contact:
+    name: Blumen GmbH
+  license:
+    name: Blumen GmbH - All rights reserved.
+  version: ${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}
+tags:
+  - name: users
+    description: Benutzerbehandlung
+paths:
+  '/users/{userId}':
+    get:
+      tags:
+        - users
+      summary: Abfrage Benutzer-Info
+      operationId: getUser
+      parameters:
+        - name: userId
+          in: path
+          description: ID der User
+          required: true
+          example: 1
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Inhalt des Beteiligten
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Beteiligter'
+    put:
+      tags:
+        - users
+      summary: Ablage neuer Benutzer-Info
+      operationId: addUser
+      parameters:
+        - name: userId
+          in: path
+          description: ID der User
+          required: true
+          example: 1
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        description: Inhalt des Beteiligten
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Beteiligter'
+      responses:
+        '200':
+          description: Operation erfolgreich
+          content:
+            application/json:
+              schema:
+                type: string
+    post:
+      tags:
+        - users
+      summary: Aktualisierung Benutzer-Info
+      operationId: updateUser
+      parameters:
+        - name: userId
+          in: path
+          description: ID der User
+          required: true
+          example: 1
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        description: Inhalt des Beteiligten
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Beteiligter'
+      responses:
+        '200':
+          description: Operation erfolgreich
+          content:
+            application/json:
+              schema:
+                type: string
+    delete:
+      tags:
+        - users
+      summary: Löschung Benutzer
+      operationId: deleteUser
+      parameters:
+        - name: userId
+          in: path
+          description: ID der User
+          required: true
+          example: 1
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Operation erfolgreich
+          content:
+            application/json:
+              schema:
+                type: string
+  '/taxes/from/{userId}':
+    get:
+      tags:
+        - taxes
+      summary: Abfrage Schulden für Benutzer
+      operationId: getTaxesForUser
+      parameters:
+        - name: userId
+          in: path
+          description: ID der User
+          required: true
+          example: 1
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Schulden für Beteiligten
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Schuld'
+  '/taxes/from/{userId}/to/{userIdTo}':
+    get:
+      tags:
+        - taxes
+      summary: Abfrage Schulden für Benutzer, nach einem anderen Benutzer
+      operationId: getTaxesBetweenUsers
+      parameters:
+        - name: userId
+          in: path
+          description: ID der User
+          required: true
+          example: 1
+          schema:
+            type: integer
+            format: int32
+        - name: userIdTo
+          in: path
+          description: ID der User, dem geschuldet wird
+          required: true
+          example: 2
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Schulden für Beteiligten
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Schuld'
+    post:
+      tags:
+        - taxes
+      summary: Ablage Schulden für Benutzer, nach einem anderen Benutzer
+      operationId: updateTaxesBetweenUsers
+      parameters:
+        - name: userId
+          in: path
+          description: ID der User
+          required: true
+          example: 1
+          schema:
+            type: integer
+            format: int32
+        - name: userIdTo
+          in: path
+          description: ID der User, dem geschuldet wird
+          required: true
+          example: 2
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        description: Liste Schulden
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Beteiligter'
+      responses:
+        '200':
+          description: Operation erfolgreich
+          content:
+            application/json:
+              schema:
+                type: string
+
+components:
+  schemas:
+    Schuld:
+      description: Schuld zwischen zwei Beteiligten
+      type: object
+      properties:
+        id:
+          description: ID
+          type: integer
+          format: int32
+          nullable: true
+        name:
+          description: Name
+          type: string
+        sourcePerson:
+          $ref: '#/components/schemas/Beteiligter'
+        targetPerson:
+          $ref: '#/components/schemas/Beteiligter'
+        summe:
+          description: Summe zu bezahlen
+          type: number
+          format: float
+    Beteiligter:
+      description: Beteiligter für Schuld/Administration
+      type: object
+      properties:
+        id:
+          description: ID
+          type: integer
+          format: int32
+          nullable: true
+        name:
+          description: Name
+          type: string
+        avatar:
+          description: CDN-Link fürs Avatar Beteiligtem
+          type: string
+          format: uri
+        email:
+          description: E-Mail Adresse
+          type: string
+          format: int32
+  
