@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+List:
+<ul>
+</ul>
+<script type="text/javascript">
+    let evtSource = new EventSource("/stream-sse-mvc");
+    const eventList = document.querySelector("ul");
+    console.log('QuerySelector:', eventList);
+
+    /*
+    evtSource.onmessage = function(e) {
+        const newElement = document.createElement("li");
+        console.log('Event', e);
+        newElement.textContent = `message: ${e.data}`;
+        eventList.appendChild(newElement);
+    };
+    */
+
+    evtSource.addEventListener("sse event - mvc", (event) => {
+        const newElement = document.createElement("li");
+        const eventList = document.querySelector('ul');
+        newElement.textContent = `message from addEventListener: ${event.data}`;
+        eventList.appendChild(newElement);
+    });
+</script>
+</body>
+</html>
